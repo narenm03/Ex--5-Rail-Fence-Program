@@ -1,8 +1,12 @@
 # Ex--5-Rail-Fence-Program
+## NAME: NARENDHARAN.M
+## REG NO: 212223230134
+
+# IMPLEMENTATION OF RAIL FENCE – ROW & COLUMN TRANSFORMATION TECHNIQUE
 
 # AIM:
 
-To write a C program to implement the rail fence transposition technique.
+# To write a C program to implement the rail fence transposition technique.
 
 # DESCRIPTION:
 
@@ -19,53 +23,85 @@ STEP-5: Read the characters row wise or column wise in the former order to get t
 # PROGRAM
 ```
 #include <stdio.h>
- #include <string.h>
- int main() {
- int i, j, k, l;
- char a[20], c[20], d[20];
- printf("\n\t\tRAIL FENCE TECHNIQUE\n");
- // Safely getting input string using fgets instead of gets
- printf("\nEnter the input string: ");
- fgets(a, sizeof(a), stdin);
- // Removing the newline character if it exists
-a[strcspn(a, "\n")] = '\0';
- l = strlen(a); // Get the length of the input string
- // Rail fence encryption: first collect even indices, then odd
- for (i = 0, j = 0; i < l; i++) {
- if (i % 2 == 0) {
- c[j++] = a[i];
- }
- }
- for (i = 0; i < l; i++) {
- if (i % 2 == 1) {
- c[j++] = a[i];
- }
- }
- c[j] = '\0'; // Null-terminate the encrypted string
- printf("\nCipher text after applying rail fence: %s\n", c);
- // Rail fence decryption
- if (l % 2 == 0) {
- k =l / 2;
- } else {
- k =(l / 2) + 1;
- }
- // Reconstructing the original text
- for (i = 0, j = 0; i < k; i++) {
- d[j] = c[i];
- j += 2;
- }
- for (i = k, j = 1; i < l; i++) {
-d[j] = c[i];
- j += 2;
- }
- d[l] = '\0'; // Null-terminate the decrypted string
- printf("\nText after decryption: %s\n", d);
- return 0; // Properly return from main
- }
+#include <string.h>
+#include <ctype.h>
+void encryptRailFence(char text[], int depth, char cipher[]) {
+    int len = strlen(text);
+    char rail[depth][len];
+    memset(rail, '\n', sizeof(rail)); 
+    int row = 0, down = 1; // Direction flag
+
+    for (int i = 0; i < len; i++) {
+        rail[row][i] = text[i]; // Place character in rail matrix
+        if (row == 0)
+            down = 1;
+        else if (row == depth - 1)
+            down = 0;
+        row += (down ? 1 : -1);
+    }
+    int k = 0;
+    for (int i = 0; i < depth; i++)
+        for (int j = 0; j < len; j++)
+            if (rail[i][j] != '\n')
+                cipher[k++] = rail[i][j];
+
+    cipher[k] = '\0';
+}
+void decryptRailFence(char cipher[], int depth, char plain[]) {
+    int len = strlen(cipher);
+    char rail[depth][len];
+    memset(rail, '\n', sizeof(rail));
+
+    int row = 0, down = 1, index = 0;
+    for (int i = 0; i < len; i++) {
+        rail[row][i] = '*';
+
+        if (row == 0)
+            down = 1;
+        else if (row == depth - 1)
+            down = 0;
+
+        row += (down ? 1 : -1);
+    }
+    for (int i = 0; i < depth; i++)
+        for (int j = 0; j < len; j++)
+            if (rail[i][j] == '*')
+                rail[i][j] = cipher[index++];
+    row = 0, down = 1;
+    for (int i = 0; i < len; i++) {
+        plain[i] = rail[row][i];
+
+        if (row == 0)
+            down = 1;
+        else if (row == depth - 1)
+            down = 0;
+
+        row += (down ? 1 : -1);
+    }
+    plain[len] = '\0';
+}
+
+int main() {
+    char text[100], cipher[100], decrypted[100];
+    int depth;
+
+    printf("Enter the plaintext: ");
+    scanf("%s", text);
+    printf("Enter the depth: ");
+    scanf("%d", &depth);
+
+    encryptRailFence(text, depth, cipher);
+    printf("Encrypted Text: %s\n", cipher);
+
+    decryptRailFence(cipher, depth, decrypted);
+    printf("Decrypted Text: %s\n", decrypted);
+
+    return 0;
+}
 ```
 # OUTPUT
-![Screenshot (105)](https://github.com/user-attachments/assets/82a660fd-a893-49e5-b377-ec17f04d5737)
+![Screenshot 2025-04-09 090639](https://github.com/user-attachments/assets/f438430a-fa5d-4be2-90d7-781c91078ae7)
 
 # RESULT
-The program is executed successfully
 
+The program is executed successfully
